@@ -40,7 +40,7 @@ Instead of designing reward functions, designed a discriminator network observe 
 The system combines three interlocking components, a stochastic actor-critic policy (SAC), an adversarial discriminator (GAIL), and a hybrid reward signal into an end-to-end imitation learning pipeline.
 
 
-<img width="3006" height="1565" alt="Image" src="https://github.com/user-attachments/assets/01ef2022-986c-41ca-b16b-cb803e9f627d" />
+<img width="3006" height="1565" alt="Image" src="https://github.com/user-attachments/assets/d82c0a81-78b5-49df-a748-fc14a9bb4e0e" />
 
 ---
 
@@ -60,7 +60,7 @@ The actor is a stochastic Gaussian MLP that maps the robot's state to a distribu
 
 Actions are sampled using the **reparameterization trick** and passed through a Tanh squashing function to produce bounded outputs in `(-1, 1)`.
 
-<img width="2196" height="1025" alt="Image" src="https://github.com/user-attachments/assets/16e92bfb-c164-4fb8-bc94-4546ab1412fd" />
+<img width="2196" height="1025" alt="Image" src="https://github.com/user-attachments/assets/c3267d7d-9706-4051-86f0-40166ae8b915" />
 
 The actor is trained under the maximum entropy reinforcement learning framework.
 
@@ -101,7 +101,7 @@ r_{gail}(s,a) = -\log(1 - D(s,a))
 ```
 
 
-<img width="1655" height="755" alt="Image" src="https://github.com/user-attachments/assets/c8a442bb-e5cc-4692-b9dc-32d55fc7a550" />
+<img width="2286" height="935" alt="Image" src="https://github.com/user-attachments/assets/2827d263-3352-4842-a49f-c4a7f420ffec" />
 
 The reward signal becomes progressively harder to earn as the discriminator improves during training.
 
