@@ -80,7 +80,7 @@ Value estimation uses two independent Q-networks operating in parallel to mitiga
 y = r_{total} + \gamma \cdot \left( \min Q_{target}(s', a') - \alpha \log \pi(a'|s') \right)
 ```
 
-<img width="2286" height="935" alt="Image" src="https://github.com/user-attachments/assets/1feb2ff1-18a7-4dc4-9f74-c12b4164a4ef" />
+<img width="2286" height="935" alt="Image" src="https://github.com/user-attachments/assets/2827d263-3352-4842-a49f-c4a7f420ffec" />
 
 ---
 
@@ -101,7 +101,7 @@ r_{gail}(s,a) = -\log(1 - D(s,a))
 ```
 
 
-<img width="2286" height="935" alt="Image" src="https://github.com/user-attachments/assets/2827d263-3352-4842-a49f-c4a7f420ffec" />
+<img width="1655" height="755" alt="Image" src="https://github.com/user-attachments/assets/57115c9a-415e-45d9-ad82-9aa50a25d917" />
 
 The reward signal becomes progressively harder to earn as the discriminator improves during training.
 
@@ -140,7 +140,7 @@ C  = 1.0
 
 ### Reward Flowchart
 
-<img width="2376" height="1025" alt="Image" src="https://github.com/user-attachments/assets/972ba3d6-c56e-414b-8281-9054f39e2d2f" />
+<img width="2376" height="1025" alt="Image" src="https://github.com/user-attachments/assets/33960e83-3e46-470f-9529-d7cebc5d4843" />
 
 ---
 
@@ -170,7 +170,7 @@ Used exclusively for:
 
 Training alternates between environment interaction and optimization.
 
-<img width="1295" height="1835" alt="Image" src="https://github.com/user-attachments/assets/99fbc18f-7e98-4286-8f8b-a578205d7427" />
+<img width="1295" height="1835" alt="Image" src="https://github.com/user-attachments/assets/2fa3c5c0-e671-4076-9957-bbab6eebbc5d" />
 
 ### Training Objective
 
@@ -231,25 +231,25 @@ The process repeats until convergence.
 # Results
 
 ## Overall Training Performance
-<img width="1027" height="572" alt="Image" src="https://github.com/user-attachments/assets/51d61f0a-2a41-4364-a633-1c63df802095" />
+<img width="1027" height="572" alt="Image" src="https://github.com/user-attachments/assets/1dbe6ad9-2413-4e15-8e75-5c82a0b3a822" />
 
 ## Navigation Success Rate
-<img width="1157" height="636" alt="Image" src="https://github.com/user-attachments/assets/bfaab1be-7c1d-48d1-806f-df3df1ce88f5" />
+<img width="1157" height="636" alt="Image" src="https://github.com/user-attachments/assets/28152721-b43e-4caa-ae19-6070c04de0d3" />
 
 ## State Visitation Heatmap
-<img width="832" height="758" alt="Image" src="https://github.com/user-attachments/assets/3c6b13fe-49b5-45c1-bb75-119d3269c6fe" />
+<img width="832" height="758" alt="Image" src="https://github.com/user-attachments/assets/eaf24aff-b0f9-41cb-9f9e-c2ca6fa9002f" />
 
 ## Reward Breakdown
-<img width="1215" height="637" alt="Image" src="https://github.com/user-attachments/assets/378d175a-3326-439b-9b43-ca1d2473a646" />
+<img width="1215" height="637" alt="Image" src="https://github.com/user-attachments/assets/48d37e9b-ded9-4217-bce2-9787b01bd2bc" />
 
 ## Actor and Critic Training
-<img width="1677" height="610" alt="Image" src="https://github.com/user-attachments/assets/f258c794-5b86-4a55-8231-64ab861467b4" />
+<img width="1677" height="610" alt="Image" src="https://github.com/user-attachments/assets/4f80a797-62be-48e2-8f38-68d9ed003e8c" />
 
 ## Discriminator Loss
-<img width="1151" height="637" alt="Image" src="https://github.com/user-attachments/assets/91fe5ede-e958-4a30-a53d-3c0ba6f3f28e" />
+<img width="1151" height="637" alt="Image" src="https://github.com/user-attachments/assets/6fdd8800-a3c7-4749-bc82-4aff48156f87" />
 
 ## Expert vs Agent Discriminator Training
-<img width="1156" height="637" alt="Image" src="https://github.com/user-attachments/assets/a68f976a-fbbe-4d61-b776-da4fa216287d" />
+<img width="1156" height="637" alt="Image" src="https://github.com/user-attachments/assets/0cee6efc-9cfc-448e-b5a7-8fe13af4964c" />
 
 ## Quantitative Results
 
