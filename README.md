@@ -39,7 +39,8 @@ Instead of designing reward functions, designed a discriminator network observe 
 
 The system combines three interlocking components, a stochastic actor-critic policy (SAC), an adversarial discriminator (GAIL), and a hybrid reward signal into an end-to-end imitation learning pipeline.
 
-![Full System Architecture](flowcharts/diagram1_full_system.png)
+
+<img width="3006" height="1565" alt="Image" src="https://github.com/user-attachments/assets/01ef2022-986c-41ca-b16b-cb803e9f627d" />
 
 ---
 
@@ -59,7 +60,7 @@ The actor is a stochastic Gaussian MLP that maps the robot's state to a distribu
 
 Actions are sampled using the **reparameterization trick** and passed through a Tanh squashing function to produce bounded outputs in `(-1, 1)`.
 
-![Actor Network](flowcharts/diagram2_actor.png)
+<img width="2196" height="1025" alt="Image" src="https://github.com/user-attachments/assets/16e92bfb-c164-4fb8-bc94-4546ab1412fd" />
 
 The actor is trained under the maximum entropy reinforcement learning framework.
 
@@ -79,7 +80,7 @@ Value estimation uses two independent Q-networks operating in parallel to mitiga
 y = r_{total} + \gamma \cdot \left( \min Q_{target}(s', a') - \alpha \log \pi(a'|s') \right)
 ```
 
-![Critic Networks](flowcharts/diagram3_critic.png)
+<img width="2286" height="935" alt="Image" src="https://github.com/user-attachments/assets/1feb2ff1-18a7-4dc4-9f74-c12b4164a4ef" />
 
 ---
 
@@ -99,7 +100,8 @@ L_D = - \mathbb{E}_{expert}[\log D(s,a)] - \mathbb{E}_{agent}[\log(1 - D(s,a))]
 r_{gail}(s,a) = -\log(1 - D(s,a))
 ```
 
-![GAIL Discriminator](flowcharts/diagram4_gail.png)
+
+<img width="1655" height="755" alt="Image" src="https://github.com/user-attachments/assets/c8a442bb-e5cc-4692-b9dc-32d55fc7a550" />
 
 The reward signal becomes progressively harder to earn as the discriminator improves during training.
 
@@ -138,7 +140,7 @@ C  = 1.0
 
 ### Reward Flowchart
 
-![Hybrid Reward](flowcharts/diagram5_hybrid_reward.png)
+<img width="2376" height="1025" alt="Image" src="https://github.com/user-attachments/assets/972ba3d6-c56e-414b-8281-9054f39e2d2f" />
 
 ---
 
@@ -168,7 +170,7 @@ Used exclusively for:
 
 Training alternates between environment interaction and optimization.
 
-![Training Loop](flowcharts/diagram6_training_loop.png)
+<img width="1295" height="1835" alt="Image" src="https://github.com/user-attachments/assets/99fbc18f-7e98-4286-8f8b-a578205d7427" />
 
 ### Training Objective
 
@@ -229,31 +231,24 @@ The process repeats until convergence.
 # Results
 
 ## Overall Training Performance
-![Training Performance](graphs/training%20performance.png)
 <img width="1027" height="572" alt="Image" src="https://github.com/user-attachments/assets/51d61f0a-2a41-4364-a633-1c63df802095" />
 
 ## Navigation Success Rate
-![Navigation Success](graphs/navigation%20success.png)
 <img width="1157" height="636" alt="Image" src="https://github.com/user-attachments/assets/bfaab1be-7c1d-48d1-806f-df3df1ce88f5" />
 
 ## State Visitation Heatmap
-![Visitation Heatmap](graphs/visitation%20heatmap.png)
 <img width="832" height="758" alt="Image" src="https://github.com/user-attachments/assets/3c6b13fe-49b5-45c1-bb75-119d3269c6fe" />
 
 ## Reward Breakdown
-![Reward Breakdown](graphs/reward%20breakdown.png)
 <img width="1215" height="637" alt="Image" src="https://github.com/user-attachments/assets/378d175a-3326-439b-9b43-ca1d2473a646" />
 
 ## Actor and Critic Training
-![Actor and Critic Training](graphs/actor%20and%20critic%20training.png)
 <img width="1677" height="610" alt="Image" src="https://github.com/user-attachments/assets/f258c794-5b86-4a55-8231-64ab861467b4" />
 
 ## Discriminator Loss
-![Discriminator Loss](graphs/discriminator%20loss.png)
 <img width="1151" height="637" alt="Image" src="https://github.com/user-attachments/assets/91fe5ede-e958-4a30-a53d-3c0ba6f3f28e" />
 
 ## Expert vs Agent Discriminator Training
-![Expert vs Agent](graphs/discriminator%20training_expert%20vs%20agent.png)
 <img width="1156" height="637" alt="Image" src="https://github.com/user-attachments/assets/a68f976a-fbbe-4d61-b776-da4fa216287d" />
 
 ## Quantitative Results
