@@ -230,6 +230,9 @@ The process repeats until convergence.
 
 # Results
 
+## Video Demonstration
+https://github.com/user-attachments/assets/e3aca37d-1da3-40a7-a3cb-6ca51cd265a8 
+
 ## Overall Training Performance
 <img width="1027" height="572" alt="Image" src="https://github.com/user-attachments/assets/1dbe6ad9-2413-4e15-8e75-5c82a0b3a822" />
 
