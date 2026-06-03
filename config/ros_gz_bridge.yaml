@@ -1,0 +1,110 @@
+# ros_gz_bridge configuration for the GAIL+SAC navigation arena.
+#
+# Loaded by the parameter_bridge node started in launch.py:
+#
+#     ros_gz_bridge::parameter_bridge \
+#         --ros-args -p config_file:=config/ros_gz_bridge.yaml
+#
+# Each entry below bridges ONE topic between Gazebo Transport (gz-msgs)
+# and ROS 2 (ROS interfaces). The bridge process keeps a persistent
+# subscriber/publisher pair for every entry, so keep the list lean.
+#
+# Direction
+#   ROS_TO_GZ      ROS publisher  -> Gazebo subscriber
+#   GZ_TO_ROS      Gazebo publisher -> ROS subscriber
+#   BIDIRECTIONAL  Used for /clock and a few other cases; not needed here.
+#
+# Topic name resolution
+#   ROS topics are short (/cmd_vel, /scan, /odom). Gazebo topics are
+#   long and follow the structure
+#       /world/<world>/model/<model>/<...>
+#   for sensors/actuators attached to spawned models, or
+#       /world/<world>/<...>
+#   for world-level services like clock and set_pose.
+#
+#   The names below MUST match what the SDFs publish/subscribe:
+#       - holonomic_robot/model.sdf publishes scan on topic "scan"
+#         and odometry on topic "odometry", both auto-namespaced by
+#         gz-sim into /model/holonomic_robot/<topic>.
+#       - The VelocityControl plugin subscribes to "cmd_vel" which
+#         becomes /model/holonomic_robot/cmd_vel.
+#       - nav_arena.sdf is the world named "nav_arena".
+#
+#   Renaming the world or the robot model requires updating every gz
+#   topic path below.
+
+# Sim clock 
+# Gazebo publishes /clock so ROS nodes can use sim time instead of wall
+# time. Useful for sim-time alignment when paused or running at non-1.0
+# real-time factor. The training/playback code uses wall-clock sleep by
+# default, but having /clock bridged costs nothing and lets you switch
+# with `--use_sim_time:=true` from the launch file.
+- ros_topic_name: "/clock"
+  gz_topic_name:  "/clock"
+  ros_type_name:  "rosgraph_msgs/msg/Clock"
+  gz_type_name:   "gz.msgs.Clock"
+  direction:      GZ_TO_ROS
+
+#Robot command channel 
+# /cmd_vel is the only ROS_TO_GZ topic we need. The trained-policy node
+# (and gazebo_env.py during training) publishes Twist messages here at
+# 10 Hz; the VelocityControl plugin in the robot SDF consumes them and
+# applies the body-frame velocity directly to the chassis link.
+- ros_topic_name: "/cmd_vel"
+  gz_topic_name:  "/model/holonomic_robot/cmd_vel"
+  ros_type_name:  "geometry_msgs/msg/Twist"
+  gz_type_name:   "gz.msgs.Twist"
+  direction:      ROS_TO_GZ
+
+#LaserScan 
+# The lidar sensor in holonomic_robot/model.sdf has topic="scan" and
+# sits on base_link. gz-sim auto-namespaces sensors as
+#   /world/<world>/model/<robot>/link/<link>/sensor/<sensor>/<topic>
+# so the full gz topic name is the mouthful below.
+#
+# subscribers (gazebo_env.py, run_trained_policy.py) use the short
+# ROS name /scan with BEST_EFFORT QoS — matching how a real ROS 2 LiDAR
+# driver publishes.
+- ros_topic_name: "/scan"
+  gz_topic_name:  "/world/nav_arena/model/holonomic_robot/link/base_link/sensor/lidar/scan"
+  ros_type_name:  "sensor_msgs/msg/LaserScan"
+  gz_type_name:   "gz.msgs.LaserScan"
+  direction:      GZ_TO_ROS
+
+# Odometry 
+# The OdometryPublisher plugin in the robot SDF publishes Odometry
+# messages on topic "odometry", auto-namespaced as
+#   /model/holonomic_robot/odometry
+- ros_topic_name: "/odom"
+  gz_topic_name:  "/model/holonomic_robot/odometry"
+  ros_type_name:  "nav_msgs/msg/Odometry"
+  gz_type_name:   "gz.msgs.Odometry"
+  direction:      GZ_TO_ROS
+
+
+# Service bridges
+# The parameter_bridge only handles topics. Service bridges require a
+# separate `ros_gz_bridge` invocation for each service:
+#
+#     ros2 run ros_gz_bridge parameter_bridge \
+#         /world/nav_arena/set_pose@ros_gz_interfaces/srv/SetEntityPose
+#
+# This is more verbose, so play.launch.py spawns these as individual
+# bridge processes alongside the topic bridge.
+#
+# Services that bridge:
+#   /world/nav_arena/set_pose
+#     ros_gz_interfaces/srv/SetEntityPose
+#     Used by: obstacle_randomizer_node (every episode reset)
+#              run_trained_policy        (to teleport the robot home)
+#              gazebo_env.py             (during training, same as above)
+#
+# Services that DO NOT bridge:
+#   - /world/nav_arena/control  (sim control: pause, resume, reset)
+#     We never call sim-level reset; per-entity teleport is faster and
+#     leaves the obstacles' randomized positions intact across episodes.
+#   - /world/nav_arena/spawn_entity
+#     Obstacles are pre-spawned in the SDF; we only move them, never
+#     create or destroy. Keeping spawn unbridged also prevents accidental
+#     world mutation from outside the launch graph.
+# ============================================================================
