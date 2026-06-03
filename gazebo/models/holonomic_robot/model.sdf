@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<!--
+  Holonomic ground robot for GAIL+SAC navigation training.
+
+ 
+-->
+<sdf version="1.9">
+  <model name="holonomic_robot">
+    <pose>0 0 0.05 0 0 0</pose>
+
+    
+    <link name="base_link">
+      <pose>0 0 0 0 0 0</pose>
+
+      <inertial>
+        <mass>3.0</mass>
+        <inertia>
+          <ixx>0.02</ixx>
+          <iyy>0.02</iyy>
+          <izz>0.03</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+
+     
+      <visual name="chassis_visual">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.10</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.2 0.2 0.2 1</specular>
+        </material>
+      </visual>
+
+      <visual name="heading_arrow">
+        <pose>0.10 0 0.06 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10 0.03 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.9 0.8 0.0 1</ambient>
+          <diffuse>1.0 0.85 0.0 1</diffuse>
+        </material>
+      </visual>
+
+     
+      <collision name="chassis_collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.10</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <kp>1e7</kp>
+              <kd>1.0</kd>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+
+     
+      <sensor name="lidar" type="gpu_lidar">
+        <pose>0 0 0.10 0 0 0</pose>
+        <topic>scan</topic>
+        <update_rate>10</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14159</min_angle>
+              <max_angle>3.14159</max_angle>
+            </horizontal>
+            <!-- Single vertical layer; this is a 2D scan. -->
+            <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>0</min_angle>
+              <max_angle>0</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.10</min>
+            <max>3.0</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </lidar>
+      </sensor>
+    </link>
+
+   
+    <plugin
+      filename="gz-sim-velocity-control-system"
+      name="gz::sim::systems::VelocityControl">
+      <topic>cmd_vel</topic>
+      <link_name>base_link</link_name>
+    </plugin>
+
+    
+    <plugin
+      filename="gz-sim-odometry-publisher-system"
+      name="gz::sim::systems::OdometryPublisher">
+      <odom_publish_frequency>50</odom_publish_frequency>
+      <odom_topic>odometry</odom_topic>
+      <odom_frame>world</odom_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+      <dimensions>3</dimensions>
+    </plugin>
+
+   
+    <gravity>false</gravity>
+
+    <!-- Prevent the body from accumulating angular drift about x/y axes.
+         Only yaw should change; pitch/roll are not part of the action
+         space. Without this, the LiDAR plane can tilt slightly over time. -->
+    <self_collide>false</self_collide>
+  </model>
+</sdf>
