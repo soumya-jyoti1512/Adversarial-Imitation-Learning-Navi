@@ -1,0 +1,346 @@
+<?xml version="1.0"?>
+<!--
+  Navigation arena for GAIL+SAC training.
+
+  Geometry
+    5.4 x 5.4 m square arena, origin at the center.
+    Bounds: x in [-2.7, +2.7], y in [-2.7, +2.7].
+
+  9-cell grid (1.8 x 1.8 m each)
+    Cells are indexed (row, col) with row 0 at the bottom and col 0 on the left.
+    Cell (0,0) = bottom-left = START cell  (robot spawns here)
+    Cell (2,2) = top-right   = GOAL cell   (red square marker)
+    The other 7 cells each contain 2 obstacles that the
+    obstacle_randomizer_node teleports to fresh positions per episode.
+
+    Cell center for (row, col) is:
+        cx = -2.7 + 0.9 + 1.8 * col  =  -1.8 + 1.8 * col
+        cy = -2.7 + 0.9 + 1.8 * row  =  -1.8 + 1.8 * row
+
+ 
+-->
+<sdf version="1.9">
+  <world name="nav_arena">
+
+    <physics name="default_physics" type="ode">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>250</real_time_update_rate>
+    </physics>
+
+    
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+   
+    <light type="directional" name="sun">
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.2 -0.2 -1</direction>
+      <cast_shadows>true</cast_shadows>
+    </light>
+
+    <scene>
+      <ambient>0.55 0.55 0.55 1</ambient>
+      <background>0.85 0.86 0.88 1</background>
+      <grid>false</grid>
+    </scene>
+
+    
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.92 0.92 0.93 1</ambient>
+            <diffuse>0.95 0.95 0.96 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 2.75 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>5.60 0.10 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>5.60 0.10 0.30</size></box></geometry>
+          <material><ambient>0.55 0.55 0.58 1</ambient><diffuse>0.62 0.62 0.65 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -2.75 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>5.60 0.10 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>5.60 0.10 0.30</size></box></geometry>
+          <material><ambient>0.55 0.55 0.58 1</ambient><diffuse>0.62 0.62 0.65 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_east">
+      <static>true</static>
+      <pose>2.75 0 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.10 5.60 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.10 5.60 0.30</size></box></geometry>
+          <material><ambient>0.55 0.55 0.58 1</ambient><diffuse>0.62 0.62 0.65 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-2.75 0 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.10 5.60 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.10 5.60 0.30</size></box></geometry>
+          <material><ambient>0.55 0.55 0.58 1</ambient><diffuse>0.62 0.62 0.65 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+   
+    <model name="grid_line_v1">
+      <static>true</static>
+      <pose>-0.9 0 0.001 0 0 0</pose>
+      <link name="link"><visual name="v">
+        <geometry><box><size>0.02 5.40 0.001</size></box></geometry>
+        <material><ambient>0.70 0.70 0.72 1</ambient><diffuse>0.70 0.70 0.72 1</diffuse></material>
+      </visual></link>
+    </model>
+    <model name="grid_line_v2">
+      <static>true</static>
+      <pose>0.9 0 0.001 0 0 0</pose>
+      <link name="link"><visual name="v">
+        <geometry><box><size>0.02 5.40 0.001</size></box></geometry>
+        <material><ambient>0.70 0.70 0.72 1</ambient><diffuse>0.70 0.70 0.72 1</diffuse></material>
+      </visual></link>
+    </model>
+    <model name="grid_line_h1">
+      <static>true</static>
+      <pose>0 -0.9 0.001 0 0 0</pose>
+      <link name="link"><visual name="v">
+        <geometry><box><size>5.40 0.02 0.001</size></box></geometry>
+        <material><ambient>0.70 0.70 0.72 1</ambient><diffuse>0.70 0.70 0.72 1</diffuse></material>
+      </visual></link>
+    </model>
+    <model name="grid_line_h2">
+      <static>true</static>
+      <pose>0 0.9 0.001 0 0 0</pose>
+      <link name="link"><visual name="v">
+        <geometry><box><size>5.40 0.02 0.001</size></box></geometry>
+        <material><ambient>0.70 0.70 0.72 1</ambient><diffuse>0.70 0.70 0.72 1</diffuse></material>
+      </visual></link>
+    </model>
+
+   
+    <model name="start_marker">
+      <static>true</static>
+      <pose>-1.8 -1.8 0.002 0 0 0</pose>
+      <link name="link"><visual name="v">
+        <geometry><box><size>0.50 0.50 0.001</size></box></geometry>
+        <material>
+          <ambient>0.15 0.45 0.85 1</ambient>
+          <diffuse>0.20 0.55 0.95 1</diffuse>
+          <emissive>0.05 0.15 0.30 1</emissive>
+        </material>
+      </visual></link>
+    </model>
+
+    
+    <model name="goal_marker">
+      <static>true</static>
+      <pose>1.8 1.8 0.002 0 0 0</pose>
+      <link name="link"><visual name="v">
+        <geometry><box><size>0.50 0.50 0.001</size></box></geometry>
+        <material>
+          <ambient>0.85 0.10 0.10 1</ambient>
+          <diffuse>0.95 0.15 0.15 1</diffuse>
+          <emissive>0.30 0.05 0.05 1</emissive>
+        </material>
+      </visual></link>
+    </model>
+
+    
+
+    <!-- Cell (0,1) — middle-bottom -->
+    <model name="obs_01_a">
+      <static>true</static>
+      <pose>-0.30 -1.80 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="obs_01_b">
+      <static>true</static>
+      <pose>0.30 -1.80 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cell (0,2) — right-bottom -->
+    <model name="obs_02_a">
+      <static>true</static>
+      <pose>1.50 -1.80 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="obs_02_b">
+      <static>true</static>
+      <pose>2.10 -1.80 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cell (1,0) — left-middle -->
+    <model name="obs_10_a">
+      <static>true</static>
+      <pose>-2.10 0.00 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="obs_10_b">
+      <static>true</static>
+      <pose>-1.50 0.00 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cell (1,1) — center -->
+    <model name="obs_11_a">
+      <static>true</static>
+      <pose>-0.30 0.00 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="obs_11_b">
+      <static>true</static>
+      <pose>0.30 0.00 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cell (1,2) — right-middle -->
+    <model name="obs_12_a">
+      <static>true</static>
+      <pose>1.50 0.00 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="obs_12_b">
+      <static>true</static>
+      <pose>2.10 0.00 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cell (2,0) — left-top -->
+    <model name="obs_20_a">
+      <static>true</static>
+      <pose>-2.10 1.80 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="obs_20_b">
+      <static>true</static>
+      <pose>-1.50 1.80 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cell (2,1) — middle-top -->
+    <model name="obs_21_a">
+      <static>true</static>
+      <pose>-0.30 1.80 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="obs_21_b">
+      <static>true</static>
+      <pose>0.30 1.80 0.15 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.35 0.35 0.30</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.35 0.35 0.30</size></box></geometry>
+          <material><ambient>0.18 0.18 0.20 1</ambient><diffuse>0.25 0.25 0.27 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
